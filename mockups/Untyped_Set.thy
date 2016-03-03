@@ -6,20 +6,16 @@ section {* Untyped Set Theory as in TLA+ *}
 
 subsection {* Basic Setup *}
 
+text \<open>
+This will be called @{text "iota!"} in Nunchaku:
+\<close>
+
 definition The_bang :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
   "The_bang P = (if \<exists>x. P x then The P else Nitpick.unknown)"
 
-
-subsection {* Set Membership *}
-
 typedecl u
 
-text \<open>
-Declare @{typ u} with an "infinite" annotation in Nunchaku, to exploit its
-approximation of quantifiers and polarity analysis?
-
-Issue: Lack of precision. Model "proto"?
-\<close>
+subsection {* Set Membership *}
 
 nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k l]
 
@@ -54,6 +50,40 @@ lemma "x \<in># y \<Longrightarrow> \<not> y \<in># x"
   sorry
 
 lemma "x \<in># y \<Longrightarrow> y \<in># z \<Longrightarrow> \<not> z \<in># x"
+  nitpick [expect = none]
+  sorry
+
+
+subsection {* Quantifiers *}
+
+text \<open>
+Nunchaku will look for finite models of @{type u}. Universal quantification
+@{prop "\<forall>x :: u. P x"} in the original problem must be translated to
+@{text "false asserting exists x : u. ~ P x"} to account for the incompleteness
+of @{type u} w.r.t. the ZF universe it approximates, unless there is a guard
+@{text "x \<in># \<dots>"} in @{prop "P x"}, in which case @{prop "\<forall>x :: u. P x"} can be
+left alone.
+\<close>
+
+definition All_u :: "(u \<Rightarrow> bool) \<Rightarrow> bool" where
+  "All_u P = (\<forall>x. P x \<and> Nitpick.unknown)"
+
+lemma "\<forall>x. \<not> x \<in># emptyset"
+  nitpick [satisfy, expect = genuine]
+  nitpick [expect = none]
+  sorry
+
+lemma "\<exists>u. All_u (\<lambda>x. x \<in># u)"
+  nitpick [satisfy, expect = none]
+  nitpick [expect = genuine]
+  sorry
+
+lemma "(SOME x. \<not> x \<in># A) \<in># A"
+  nitpick [expect = genuine]
+  nitpick [satisfy, expect = none]
+  oops
+
+lemma "\<not> (SOME x. \<not> x \<in># A) \<in># A"
   nitpick [expect = none]
   sorry
 
