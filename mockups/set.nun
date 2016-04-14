@@ -1,0 +1,27 @@
+
+
+val u : type.
+
+val emptyset : u.
+val mem : u -> u -> prop.
+
+axiom forall x. ~ (mem x emptyset).
+
+# ext
+axiom forall x y. (x = y) = (forall z. mem z x = mem z y).
+
+pred trans_mem : u -> u -> prop :=
+  forall x y. mem x y => trans_mem x y;
+  forall x y z. mem x y && trans_mem y z => trans_mem x z.
+
+# well-founded
+axiom forall x. ~ (trans_mem x x).
+
+# goals
+
+# goal exists a b. ~ (mem a b).
+# goal exists a b. mem a b.
+
+# FIXME
+# goal exists a. ~ mem (choice (fun x. ~ (mem x a))) a.
+
