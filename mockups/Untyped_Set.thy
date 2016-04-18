@@ -1,7 +1,7 @@
 theory Untyped_Set
 imports Main
 begin
-
+                                                    
 section {* Untyped Set Theory as in TLA+ *}
 
 subsection {* Basic Setup *}
