@@ -20,7 +20,7 @@ rec not : u -> u :=
 
 rec conj : u -> u -> u :=
     forall x y. conj x y =
-    	   (if (x=TLA_false)||(y=TLA_true)
+    	   (if (x=TLA_false)||(y=TLA_false)
 	   then TLA_false
 	   else
 	      (if (x=TLA_true)
@@ -53,4 +53,4 @@ rec boolify : u -> u :=
 rec isBool : u -> prop :=
     forall x. isBool x = ((boolify x) = x).
 
-
+goal forall a. (exists (c:u). (is_true (disj (conj c (disj (not a) c)) (conj a c)))).
