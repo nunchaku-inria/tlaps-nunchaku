@@ -1,24 +1,23 @@
-val u : type.
 
 # PROPOSITIONAL LOGIC
 
 
-val TLA_true : u.
-val TLA_false : u.
+val TLA_true : a_u.
+val TLA_false : a_u.
 
 axiom TLA_true!=TLA_false.
 
-rec is_true : u -> prop :=
+rec is_true : a_u -> prop :=
     forall x. is_true x = (x = TLA_true).
 
-rec cond : u -> u -> u -> u :=
+rec cond : a_u -> a_u -> a_u -> a_u := 
     forall x t e. cond x t e =
     	   (if (is_true x) then t else e).
 
-rec not : u -> u :=
+rec not : a_u -> a_u :=
     forall x. not x = cond x TLA_false TLA_true.
 
-rec conj : u -> u -> u :=
+rec conj : a_u -> a_u -> a_u :=
     forall x y. conj x y =
     	   (if (x=TLA_false)||(y=TLA_false)
 	   then TLA_false
@@ -27,7 +26,7 @@ rec conj : u -> u -> u :=
 	      then y
 	      else (conj x y))).
 
-rec disj : u -> u -> u :=
+rec disj : a_u -> a_u -> a_u :=
     forall x y. disj x y =
     	   (if (x=TLA_true)||(y=TLA_true)
 	   then TLA_true
@@ -39,18 +38,16 @@ rec disj : u -> u -> u :=
 		then y
 		else (disj x y)))).
 	       
-rec imp : u -> u -> u :=
+rec imp : a_u -> a_u -> a_u :=
     forall x y. imp x y =
     	   disj (not x) y.
 	   
-rec iff : u -> u -> u :=
+rec iff : a_u -> a_u -> a_u :=
     forall x y. iff x y =
     	   (conj (imp x y) (imp y x)).
 
-rec boolify : u -> u :=
+rec boolify : a_u -> a_u :=
     forall x. boolify x = cond x TLA_true TLA_false.
 
-rec isBool : u -> prop :=
+rec isBool : a_u -> prop :=
     forall x. isBool x = ((boolify x) = x).
-
-goal forall a. (exists (c:u). (is_true (disj (conj c (disj (not a) c)) (conj a c)))).
