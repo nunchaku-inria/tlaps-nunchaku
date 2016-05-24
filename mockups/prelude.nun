@@ -1,0 +1,14 @@
+val u : type.
+
+copy a_u := u
+  abstract au_of_u
+  concrete u_of_au.
+
+include "propositional-logic.nun".
+include "set-theory.nun".
+
+goal forall a. exists c. is_true (disj (conj c (disj (not a) c)) (conj a c)).
+
+# goal exists x y a b. ~(is_in (cap a b) x) && (is_in b x) && (is_in (cap a b) y).
+    #FIXME     # -> bug plusieurs valeurs asssignees a la meme variable 
+   

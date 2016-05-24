@@ -1,0 +1,36 @@
+
+# SET THEORY
+
+val is_in : a_u -> a_u -> prop.
+
+# extentionality
+axiom forall x y. ((x = y) || (exists z. ~(is_in x z && is_in y z))).
+
+# well-founded
+pred [wf] trans_is_in : a_u -> a_u -> prop :=
+  forall x y. is_in x y => trans_is_in x y;
+  forall x y z. is_in y x && is_in z y => trans_is_in z x.
+axiom forall x. ~ (trans_is_in x x).
+
+# empty set
+val emptySet : a_u.
+axiom forall x. ~(is_in emptySet x).
+
+# singleton
+#val singleton : a_u -> a_u.
+#axiom forall x. (singleton x) != emptySet.
+#axiom forall x. is_in (singleton x) x.
+
+# union
+val cup : a_u -> a_u -> a_u.
+axiom forall a b x. ((is_in a x) || (is_in b x)) = (is_in (cup a b) x).
+
+# intersection
+val cap : a_u -> a_u -> a_u.
+axiom forall a b x. ((is_in a x) && (is_in b x)) = (is_in (cap a b) x).
+
+# substraction
+val setminus : a_u -> a_u -> a_u.
+axiom forall a b x. ((is_in a x) && (~(is_in b x))) = (is_in (setminus a b) x).
+
+# goal exists x y a b. ~(is_in (cap a b) x) && (is_in b x) && (is_in (cap a b) y).

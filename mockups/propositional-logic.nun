@@ -1,0 +1,53 @@
+
+# PROPOSITIONAL LOGIC
+
+
+val TLA_true : a_u.
+val TLA_false : a_u.
+
+axiom TLA_true!=TLA_false.
+
+rec is_true : a_u -> prop :=
+    forall x. is_true x = (x = TLA_true).
+
+rec cond : a_u -> a_u -> a_u -> a_u := 
+    forall x t e. cond x t e =
+    	   (if (is_true x) then t else e).
+
+rec not : a_u -> a_u :=
+    forall x. not x = cond x TLA_false TLA_true.
+
+rec conj : a_u -> a_u -> a_u :=
+    forall x y. conj x y =
+    	   (if (x=TLA_false)||(y=TLA_false)
+	   then TLA_false
+	   else
+	      (if (x=TLA_true)
+	      then y
+	      else (conj x y))).
+
+rec disj : a_u -> a_u -> a_u :=
+    forall x y. disj x y =
+    	   (if (x=TLA_true)||(y=TLA_true)
+	   then TLA_true
+	   else
+	       (if (y=TLA_false)
+	       then x
+	       else
+		(if (x=TLA_false)
+		then y
+		else (disj x y)))).
+	       
+rec imp : a_u -> a_u -> a_u :=
+    forall x y. imp x y =
+    	   disj (not x) y.
+	   
+rec iff : a_u -> a_u -> a_u :=
+    forall x y. iff x y =
+    	   (conj (imp x y) (imp y x)).
+
+rec boolify : a_u -> a_u :=
+    forall x. boolify x = cond x TLA_true TLA_false.
+
+rec isBool : a_u -> prop :=
+    forall x. isBool x = ((boolify x) = x).
