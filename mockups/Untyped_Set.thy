@@ -15,9 +15,10 @@ definition The_bang :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
 
 typedecl u
 
-subsection {* Set Membership *}
-
 nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k l]
+
+
+subsection {* Set Membership *}
 
 axiomatization
   emptyset :: u and
@@ -68,6 +69,7 @@ left alone.
 definition All_u :: "(u \<Rightarrow> bool) \<Rightarrow> bool" where
   "All_u P = (\<forall>x. P x \<and> Nitpick.unknown)"
 
+(* use All_u? *)
 lemma "\<forall>x. \<not> x \<in># emptyset"
   nitpick [satisfy, expect = genuine]
   nitpick [expect = none]
