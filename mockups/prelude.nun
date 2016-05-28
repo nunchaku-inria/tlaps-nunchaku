@@ -1,14 +1,9 @@
-val u : type.
+val u : type [infinite].
+val alpha_u : type [approx_of u].
+val upcast : alpha_u -> u [upcast].
 
-copy a_u := u
-  abstract au_of_u
-  concrete u_of_au.
+val dom : u -> u.
+val app : u -> u -> u.
+axiom forall f g. (dom f = dom g) and (forall x. mem x (dom f) => ((app f x)=(app g x))) => (f=g).
 
-include "propositional-logic.nun".
 include "set-theory.nun".
-
-goal forall a. exists c. is_true (disj (conj c (disj (not a) c)) (conj a c)).
-
-# goal exists x y a b. ~(is_in (cap a b) x) && (is_in b x) && (is_in (cap a b) y).
-    #FIXME     # -> bug plusieurs valeurs asssignees a la meme variable 
-   
