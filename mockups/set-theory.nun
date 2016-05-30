@@ -17,7 +17,7 @@ axiom forall x. ~ (trans_is_in x x).
 
 # union
 val p_union : u -> u -> u -> prop :=
-    forall a b c. p_union a b c = (forall x:u. mem x c <=> mem x a || mem x b).
+    forall a b c. p_union a b c = (forall x:u. mem x c = (mem x a || mem x b)).
 val union : u -> u -> u :=
 	forall a b. union a b = unique (p_union a b).
 		
@@ -25,7 +25,7 @@ val union : u -> u -> u :=
 val p_inter : u -> u -> u -> prop :=
     forall a b c. p_inter a b c = (forall x:u. mem x c <=> mem x a && mem x b).
 val inter : u -> u -> u :=
-	forall a b. inter a b = inter (p_inter a b).
+	forall a b. inter a b = unique (p_inter a b).
 
 # substraction
 val p_minus : u -> u -> u -> prop :=
@@ -35,7 +35,7 @@ val minus : u -> u -> u :=
 
 # powerset
 val p_power : u -> u -> prop :=
-    forall a b. p_power a b = (forall c:u. mem c b => (forall x:u. mem x c => mem x a)).
+    forall a b. p_power a b = (forall c:u. mem c b <=> (forall x:u. mem x c => mem x a)).
 val power : u -> u :=
 	forall a. power a = unique (p_power a).
 

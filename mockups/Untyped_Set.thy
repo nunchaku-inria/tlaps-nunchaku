@@ -104,7 +104,7 @@ axiomatization
   dom :: "u \<Rightarrow> u" and
   app :: "u \<Rightarrow> u \<Rightarrow> u" (infixl "\<cdot>" 70)
 where
-  app_ext: "\<And>A B. dom A = dom B \<and> (\<forall>x. x \<in># dom A \<longrightarrow> f \<cdot> x = g \<cdot> x) \<longrightarrow> f = g"
+  app_ext: "\<And>f g. dom f = dom g \<and> (\<forall>x. x \<in># dom f \<longrightarrow> f \<cdot> x = g \<cdot> x) \<longrightarrow> f = g"
 
 abbreviation mapsto :: "u \<Rightarrow> (u \<Rightarrow> u) \<Rightarrow> u" where
   "mapsto A f \<equiv> The_bang (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
