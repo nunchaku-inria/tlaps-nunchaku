@@ -1,0 +1,48 @@
+= Encoding of Set Theory
+
+== U and α_U
+
+Since `U` only has infinite models, we need some finite approximation of
+it, called `α_U`. An operation `up : α_U -> U` is used to project back to `U`.
+Everything the user writes originally lives in `U`, and quantification is
+dangerous: a positive occurrence of `forall x:U. P` must be approximated
+by `false` since the backends have no chance to check that `P` holds on an
+infinite model.
+
+On the other hand, the prelude defining TLA builtins can exploit `α_U` to avoid
+infinite quantification. The idea, similar to the encoding of recursive
+functions in Nunchaku, is that builtins need to be evaluated only on a finite
+set of terms, so we quantify on the finite set and add guards (with
+`asserting`) to ensure consistency of the set.
+For instance, `subseteq : U -> U -> prop` is defined only on `α_U × α_U`
+by something like:
+
+----
+rec subseteq : U -> U -> prop :=
+  forall x y : α_U.
+    subseteq (up x) (up y) =
+      (forall z:α_U. mem (up z) (up x) => mem (up z) (up y)).
+----
+
+Here we also see that `z` ranges only on `α_U`. In general, we might need to
+insert guards to ensure some terms are defined in the model (this is after
+some encoding, either in Nunchaku or in TLAPS):
+
+----
+rec powerset : U -> U :=
+  forall x : α_U.
+    powerset x =
+      unique
+        (fun y.
+          forall z : α_U.
+            mem (up z) y = subseteq (up z) y
+            asserting exists y':α_U : up y' = y)
+----
+
+Here, by typing of `unique`, `y : U` is mandatory, but we insert a guard
+that forces `y` to correspond to some `up y'`.
+
+Encodings of `subseteq` and `app` (function application) can be found
+in link:../mockups/app_ext.nun[the mockup].
+
+
