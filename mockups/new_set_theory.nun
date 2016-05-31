@@ -1,44 +1,51 @@
 # should be unspecified but infinite
-data u := U1 | U2 u.
+data u := Z | S u.
 
 val a : type.
 
-val g1 : a -> u.
-val g2 : a -> u.
+val g : a -> u.
 
 val mem : u -> u -> prop.
 
 # extensionality
-axiom forall aa bb. g2 aa = g2 bb ||
-  (exists cc dd. g1 cc = g1 dd && g2 cc = g2 aa && g2 dd = g2 bb
-      && ~ (mem (g1 cc) (g2 aa) = mem (g1 cc) (g2 bb))).
+axiom forall (A : a) (B : a). g A = g B || (exists (x : a). ~ (mem (g x) (g A) = mem (g x) (g B))).
 
 # high-level "mem", with built-in guard
 ## CORRECT VERSION (but Nunchaku complains):
 #rec Mem : u -> u -> prop :=
-#  forall x y. Mem x y = (mem x y asserting (exists aa. g1 aa = x && g2 aa = y)).
+#  forall x y. Mem x y = (mem x y asserting ((exists a. g a = x) && (exists b. g b = y))).
 
 ## WRONG VERSION:
-rec Mem : u -> u -> prop :=
-  forall x y. Mem x y = mem x y.
+#rec Mem : u -> u -> prop :=
+#  forall x y. Mem x y = mem x y.
 
-val trans_Mem : u -> u -> prop.
+rec Mem : u -> u -> prop :=
+  forall x y. Mem x y = unique_unsafe (fun P. P = mem x y && (exists a. g a = x) && (exists b. g b = y)).
+
+val trans_mem : a -> a -> prop.
 
 # overapproximation of transitive closure
-axiom forall aa. mem (g1 aa) (g2 aa) => trans_Mem (g1 aa) (g2 aa).
-axiom forall aa bb. g2 aa = g1 bb && trans_Mem (g1 aa) (g2 aa) && Mem (g1 bb) (g2 bb) =>
-  trans_Mem (g1 aa) (g2 bb).
+axiom forall x (y : a). mem (g x) (g y) => trans_mem x y.
+axiom forall x y (z : a). trans_mem x y && mem (g y) (g z) => trans_mem x z.
 
 # acyclicity
-axiom forall aa. ~ (trans_Mem (g1 aa) (g1 aa)).
+axiom forall x. ~ trans_mem x x.
 
 # empty set
-spec emptyset : u :=
-  forall aa. g2 aa = emptyset => ~ (mem (g1 aa) emptyset).
+rec emptyset : u :=
+  emptyset = unique_unsafe (fun A. forall a. mem (g a) A && (exists a. g a = A)).
 
 # subset
 rec subset : u -> u -> prop :=
-  subset A B = (
+  forall A B. subset A B = (forall a. Mem (g a) A => Mem (g a) B).
 
+# powerset
+rec Pow : u -> u :=
+  forall B. Pow B = unique_unsafe (fun C. forall A. Mem (g A) C = subset (g A) B).
 
-goal true.
+val c : u.
+val d : u.
+
+goal ~ subset c d.
+
+#goal ~ (Pow c = c).
