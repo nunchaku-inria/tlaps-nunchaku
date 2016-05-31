@@ -32,4 +32,8 @@ axiom forall aa bb. g2 aa = g1 bb && trans_Mem (g1 aa) (g2 aa) && Mem (g1 bb) (g
 # acyclicity
 axiom forall aa. ~ (trans_Mem (g1 aa) (g1 aa)).
 
+# empty set
+spec emptyset : u :=
+  forall aa. g2 aa = emptyset => ~ (mem (g1 aa) emptyset).
+
 goal true.
