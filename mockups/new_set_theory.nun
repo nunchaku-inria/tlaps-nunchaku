@@ -10,15 +10,6 @@ val mem : u -> u -> prop.
 # extensionality
 axiom forall (A : a) (B : a). g A = g B || (exists (x : a). ~ (mem (g x) (g A) = mem (g x) (g B))).
 
-# high-level "mem", with built-in guard
-## CORRECT VERSION (but Nunchaku complains):
-#rec Mem : u -> u -> prop :=
-#  forall x y. Mem x y = (mem x y asserting ((exists a. g a = x) && (exists b. g b = y))).
-
-## WRONG VERSION:
-#rec Mem : u -> u -> prop :=
-#  forall x y. Mem x y = mem x y.
-
 rec Mem : u -> u -> prop :=
   forall x y. Mem x y = unique_unsafe (fun P. P = mem x y && (exists a. g a = x) && (exists b. g b = y)).
 
@@ -39,6 +30,10 @@ rec emptyset : u :=
 rec subset : u -> u -> prop :=
   forall A B. subset A B = (forall a. Mem (g a) A => Mem (g a) B).
 
+# union
+rec union : u -> u -> u :=
+  forall A B. union A B = unique_unsafe (fun C. forall x. Mem (g x) C = (Mem (g x) A || Mem (g x) B)).
+
 # powerset
 rec Pow : u -> u :=
   forall B. Pow B = unique_unsafe (fun C. forall A. Mem (g A) C = subset (g A) B).
@@ -49,4 +44,6 @@ val x : u.
 val y : u.
 val z : u.
 
-goal subset x y && ~ (x = y).
+goal ~ (x = y) && ~ (y = z) && ~ (x = z) && x = union y z.
+
+# goal x = Pow y.
