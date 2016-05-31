@@ -33,7 +33,7 @@ axiom forall x. ~ trans_mem x x.
 
 # empty set
 rec emptyset : u :=
-  emptyset = unique_unsafe (fun A. forall a. mem (g a) A && (exists a. g a = A)).
+  emptyset = unique_unsafe (fun A. forall a. ~ mem (g a) A && (exists a. g a = A)).
 
 # subset
 rec subset : u -> u -> prop :=
