@@ -113,6 +113,11 @@ lemma "f = mapsto (dom f) (op \<cdot> f)"
 
 subsection {* Powerset *}
 
+text {*
+Starting from here, things don't work well unless we introduce \<alpha> types for each
+operation, as we would in Nunchaku.
+*}
+
 definition
   Pow :: "u \<Rightarrow> u"
 where

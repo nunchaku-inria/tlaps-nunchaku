@@ -1,0 +1,32 @@
+# should be unspecified but infinite
+data u := U1 | U2 u.
+
+val a : type.
+
+val g1 : a -> u.
+val g2 : a -> u.
+
+val mem : u -> u -> prop.
+
+# extensionality
+axiom forall aa bb. g2 aa = g2 bb ||
+  (exists cc dd. g1 cc = g1 dd && g2 cc = g2 aa && g2 dd = g2 bb
+      && ~ (mem (g1 cc) (g2 aa) = mem (g1 cc) (g2 bb))).
+
+#rec Mem : u -> u -> prop :=
+#  forall x y. Mem x y = (mem x y asserting (exists aa. g1 aa = x && g2 aa = y)).
+
+rec Mem : u -> u -> prop :=
+  forall x y. Mem x y = mem x y.
+
+val trans_Mem : u -> u -> prop.
+
+# overapproximation of transitive closure
+axiom forall aa. mem (g1 aa) (g2 aa) => trans_Mem (g1 aa) (g2 aa).
+axiom forall aa bb. g2 aa = g1 bb && trans_Mem (g1 aa) (g2 aa) && Mem (g1 bb) (g2 bb) =>
+  trans_Mem (g1 aa) (g2 bb).
+
+# acyclicity
+axiom forall aa. ~ (trans_Mem (g1 aa) (g1 aa)).
+
+goal true.
