@@ -69,24 +69,12 @@ lemma "x \<in># y \<Longrightarrow> y \<in># z \<Longrightarrow> \<not> z \<in>#
 
 subsection {* Empty Set *}
 
-definition emptyset :: u where
-  emptyset_def[nitpick_simp]: "emptyset = unique_unsafe (\<lambda>A. \<forall>a. \<gamma>2_mem a \<noteq> A \<or> \<not> \<gamma>1_mem a \<in>## A)"
+axiomatization emptyset :: u where
+  emptyset_def[nitpick_simp]: "\<forall>a. \<gamma>2_mem a = emptyset \<longrightarrow> \<not> \<gamma>1_mem a \<in>## emptyset"
 
 lemma "\<forall>x. \<not> x \<in># emptyset"
   nitpick [satisfy, expect = none]
-  nitpick [expect = none, eval = "emptyset" "{A. \<forall>a. \<gamma>2_mem a \<noteq> A \<or> \<not> \<gamma>1_mem a \<in>## A}"]
-
-(*
   nitpick [expect = none]
-  sorry
-*)
-
-oops
-end
-
-lemma "\<exists>u. All_u (\<lambda>x. x \<in># u)"
-  nitpick [satisfy, expect = none]
-  nitpick [expect = genuine]
   sorry
 
 lemma "(SOME x. \<not> x \<in># A) \<in># A"
