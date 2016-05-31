@@ -13,9 +13,12 @@ axiom forall aa bb. g2 aa = g2 bb ||
   (exists cc dd. g1 cc = g1 dd && g2 cc = g2 aa && g2 dd = g2 bb
       && ~ (mem (g1 cc) (g2 aa) = mem (g1 cc) (g2 bb))).
 
+# high-level "mem", with built-in guard
+## CORRECT VERSION (but Nunchaku complains):
 #rec Mem : u -> u -> prop :=
 #  forall x y. Mem x y = (mem x y asserting (exists aa. g1 aa = x && g2 aa = y)).
 
+## WRONG VERSION:
 rec Mem : u -> u -> prop :=
   forall x y. Mem x y = mem x y.
 
@@ -28,5 +31,14 @@ axiom forall aa bb. g2 aa = g1 bb && trans_Mem (g1 aa) (g2 aa) && Mem (g1 bb) (g
 
 # acyclicity
 axiom forall aa. ~ (trans_Mem (g1 aa) (g1 aa)).
+
+# empty set
+spec emptyset : u :=
+  forall aa. g2 aa = emptyset => ~ (mem (g1 aa) emptyset).
+
+# subset
+rec subset : u -> u -> prop :=
+  subset A B = (
+
 
 goal true.
