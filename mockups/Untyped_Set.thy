@@ -7,13 +7,18 @@ section {* Untyped Set Theory as in TLA+ *}
 subsection {* Basic Setup *}
 
 text \<open>
-This will be called @{text "iota!"} in Nunchaku:
+Like in Nunchaku:
 \<close>
 
-definition The_bang :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
-  "The_bang P = (if \<exists>x. P x then The P else Nitpick.unknown)"
+definition unique_unsafe :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
+  "unique_unsafe P = (if \<exists>x. P x then The P else Nitpick.unknown)"
 
 typedecl u
+typedecl \<alpha>_mem
+
+axiomatization
+  \<gamma>1_mem :: "\<alpha>_mem \<Rightarrow> u" and
+  \<gamma>2_mem :: "\<alpha>_mem \<Rightarrow> u"
 
 nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k l]
 
@@ -21,12 +26,33 @@ nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k
 subsection {* Set Membership *}
 
 axiomatization
-  emptyset :: u and
   mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>#" 50)
 where
-  emptyset: "\<And>x. \<not> x \<in># emptyset" and
-  mem_ext: "\<And>A B. A = B \<or> (\<exists>x. \<not> (x \<in># A \<longleftrightarrow> x \<in># B))" and
-  mem_acyclic: "\<And>A. \<not> tranclp (op \<in>#) A A"
+  mem_ext: "\<And>a b. \<gamma>2_mem a = \<gamma>2_mem b \<or>
+    (\<exists>a' b'. \<gamma>1_mem a' = \<gamma>1_mem b' \<and> \<gamma>2_mem a' = \<gamma>2_mem a \<and> \<gamma>2_mem b' = \<gamma>2_mem b \<and>
+       \<not> (\<gamma>1_mem a' \<in># \<gamma>2_mem a \<longleftrightarrow> \<gamma>1_mem a' \<in># \<gamma>2_mem b))" and
+  mem_acyclic: "\<And>A. \<not> tranclp (\<lambda>x B. x \<in># B \<and> (\<exists>b. \<gamma>1_mem b = x \<and> \<gamma>2_mem b = B)) A A"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 nitpick_params [card = 1-8, eval = "\<lambda>x. {y. y \<in># x}", format mem = 2]
 
@@ -53,6 +79,10 @@ lemma "x \<in># y \<Longrightarrow> \<not> y \<in># x"
 lemma "x \<in># y \<Longrightarrow> y \<in># z \<Longrightarrow> \<not> z \<in># x"
   nitpick [expect = none]
   sorry
+
+
+subsection {* Empty Set *}
+
 
 
 subsection {* Quantifiers *}
@@ -107,7 +137,7 @@ where
   app_ext: "\<And>f g. dom f = dom g \<and> (\<forall>x. x \<in># dom f \<longrightarrow> f \<cdot> x = g \<cdot> x) \<longrightarrow> f = g"
 
 abbreviation mapsto :: "u \<Rightarrow> (u \<Rightarrow> u) \<Rightarrow> u" where
-  "mapsto A f \<equiv> The_bang (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
+  "mapsto A f \<equiv> unique_unsafe (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
 
 lemma "f = mapsto (dom f) (op \<cdot> f)"
   nitpick [expect = none]
@@ -119,7 +149,7 @@ subsection {* Powerset *}
 definition
   Pow :: "u \<Rightarrow> u"
 where
-  "Pow B = The_bang (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
+  "Pow B = unique_unsafe (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
 
 lemma "A \<in># Pow B"
   nitpick [expect = genuine]
@@ -143,7 +173,7 @@ subsection {* Big Union *}
 definition
   Union :: "u \<Rightarrow> u"
 where
-  "Union B = The_bang (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
+  "Union B = unique_unsafe (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
 
 lemma "A \<in># Union A"
   nitpick [expect = genuine]
