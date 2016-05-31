@@ -13,14 +13,16 @@ Like in Nunchaku:
 definition unique_unsafe :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
   "unique_unsafe P = (if \<exists>x. P x then The P else Nitpick.unknown)"
 
-typedecl u
+typedef u = "UNIV :: nat set"
+  by simp
+
 typedecl \<alpha>_mem
 
 axiomatization
   \<gamma>1_mem :: "\<alpha>_mem \<Rightarrow> u" and
   \<gamma>2_mem :: "\<alpha>_mem \<Rightarrow> u"
 
-nitpick_params [user_axioms, dont_box, show_all,
+nitpick_params [user_axioms, dont_box, max_potential = 0, show_all,
   atoms u = a b c d e f g h i j k l,
   atoms \<alpha>_mem = aa bb cc dd ee ff gg hh ii jj kk ll]
 
@@ -67,27 +69,20 @@ lemma "x \<in># y \<Longrightarrow> y \<in># z \<Longrightarrow> \<not> z \<in>#
 
 subsection {* Empty Set *}
 
+definition emptyset :: u where
+  emptyset_def[nitpick_simp]: "emptyset = unique_unsafe (\<lambda>A. \<forall>a. \<gamma>2_mem a \<noteq> A \<or> \<not> \<gamma>1_mem a \<in>## A)"
 
-
-subsection {* Quantifiers *}
-
-text \<open>
-Nunchaku will look for finite models of @{type u}. Universal quantification
-@{prop "\<forall>x :: u. P x"} in the original problem must be translated to
-@{text "false asserting exists x : u. ~ P x"} to account for the incompleteness
-of @{type u} w.r.t. the ZF universe it approximates, unless there is a guard
-@{text "x \<in># \<dots>"} in @{prop "P x"}, in which case @{prop "\<forall>x :: u. P x"} can be
-left alone.
-\<close>
-
-definition All_u :: "(u \<Rightarrow> bool) \<Rightarrow> bool" where
-  "All_u P = (\<forall>x. P x \<and> Nitpick.unknown)"
-
-(* use All_u? *)
 lemma "\<forall>x. \<not> x \<in># emptyset"
-  nitpick [satisfy, expect = genuine]
+  nitpick [satisfy, expect = none]
+  nitpick [expect = none, eval = "emptyset" "{A. \<forall>a. \<gamma>2_mem a \<noteq> A \<or> \<not> \<gamma>1_mem a \<in>## A}"]
+
+(*
   nitpick [expect = none]
   sorry
+*)
+
+oops
+end
 
 lemma "\<exists>u. All_u (\<lambda>x. x \<in># u)"
   nitpick [satisfy, expect = none]
