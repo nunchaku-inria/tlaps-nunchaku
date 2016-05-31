@@ -36,4 +36,9 @@ axiom forall aa. ~ (trans_Mem (g1 aa) (g1 aa)).
 spec emptyset : u :=
   forall aa. g2 aa = emptyset => ~ (mem (g1 aa) emptyset).
 
+# subset
+rec subset : u -> u -> prop :=
+  subset A B = (
+
+
 goal true.
