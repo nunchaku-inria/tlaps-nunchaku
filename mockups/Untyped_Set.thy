@@ -32,7 +32,7 @@ axiomatization mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "#\<in>#" 50
 definition Mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>#" 50) where
   "x \<in># A \<longleftrightarrow> unique_unsafe (\<lambda>P. (P \<longleftrightarrow> x #\<in># A) \<and> ex\<alpha> x \<and> ex\<alpha> A)"
 
-nitpick_params [card = 1-8, format mem = 2]
+nitpick_params [card = 1-8, format mem = 2, format Mem = 2]
 
 lemma "\<not> x \<in># A"
   nitpick [expect = genuine]
@@ -78,9 +78,7 @@ lemma "\<not> (SOME x. \<not> x \<in># A) \<in># A"
 
 subsection {* Subset *}
 
-definition
-  subseteq :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<subseteq>#" 50)
-where
+definition subseteq :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<subseteq>#" 50) where
   "subseteq A B \<longleftrightarrow> (\<forall>x. x \<in># A \<longrightarrow> x \<in># B)"
 
 
@@ -108,7 +106,7 @@ where
   "Pow B = unique_unsafe (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
 
 lemma "A \<in># Pow B"
-  nitpick [expect = genuine]
+  nitpick [expect = genuine] (* FIXME *)
   oops
 
 lemma "\<not> A \<in># Pow B"
