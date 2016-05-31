@@ -46,6 +46,6 @@ rec Pow : u -> u :=
 val c : u.
 val d : u.
 
-goal ~ subset c d.
+# goal ~ subset c d.
 
-#goal ~ (Pow c = c).
+goal Mem emptyset c.
