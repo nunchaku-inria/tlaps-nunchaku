@@ -34,7 +34,7 @@ axiomatization
 where
   mem_ext: "\<And>a b. \<gamma>2_mem a = \<gamma>2_mem b \<or>
     (\<exists>a' b'. \<gamma>1_mem a' = \<gamma>1_mem b' \<and> \<gamma>2_mem a' = \<gamma>2_mem a \<and> \<gamma>2_mem b' = \<gamma>2_mem b \<and>
-       \<not> (\<gamma>1_mem a' \<in>## \<gamma>2_mem a \<longleftrightarrow> \<gamma>1_mem a' \<in>## \<gamma>2_mem b))" and
+       \<not> (\<gamma>1_mem a' \<in>## \<gamma>2_mem a \<longleftrightarrow> \<gamma>1_mem b' \<in>## \<gamma>2_mem b))" and
   mem_acyclic: "\<And>a. \<not> tranclp (\<lambda>x B. x \<in>## B \<and> (\<exists>b. \<gamma>1_mem b = x \<and> \<gamma>2_mem b = B)) (\<gamma>1_mem a) (\<gamma>1_mem a)"
 
 definition Mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>#" 50) where
