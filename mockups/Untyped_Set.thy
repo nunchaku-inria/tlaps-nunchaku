@@ -1,4 +1,4 @@
-theory Untyped_Set
+theory Old_Untyped_Set
 imports Main
 begin
                                                     
@@ -7,38 +7,26 @@ section {* Untyped Set Theory as in TLA+ *}
 subsection {* Basic Setup *}
 
 text \<open>
-Like in Nunchaku:
+This will be called @{text "iota!"} in Nunchaku:
 \<close>
 
-definition unique_unsafe :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
-  "unique_unsafe P = (if \<exists>x. P x then The P else Nitpick.unknown)"
+definition The_bang :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
+  "The_bang P = (if \<exists>x. P x then The P else Nitpick.unknown)"
 
-typedef u = "UNIV :: nat set"
-  by simp
+typedecl u
 
-typedecl \<alpha>_mem
-
-axiomatization
-  \<gamma>1_mem :: "\<alpha>_mem \<Rightarrow> u" and
-  \<gamma>2_mem :: "\<alpha>_mem \<Rightarrow> u"
-
-nitpick_params [user_axioms, dont_box, max_potential = 0, show_all,
-  atoms u = a b c d e f g h i j k l,
-  atoms \<alpha>_mem = aa bb cc dd ee ff gg hh ii jj kk ll]
+nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k l]
 
 
 subsection {* Set Membership *}
 
 axiomatization
-  mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>##" 50)
+  emptyset :: u and
+  mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>#" 50)
 where
-  mem_ext: "\<And>a b. \<gamma>2_mem a = \<gamma>2_mem b \<or>
-    (\<exists>a' b'. \<gamma>1_mem a' = \<gamma>1_mem b' \<and> \<gamma>2_mem a' = \<gamma>2_mem a \<and> \<gamma>2_mem b' = \<gamma>2_mem b \<and>
-       \<not> (\<gamma>1_mem a' \<in>## \<gamma>2_mem a \<longleftrightarrow> \<gamma>1_mem b' \<in>## \<gamma>2_mem b))" and
-  mem_acyclic: "\<And>a. \<not> tranclp (\<lambda>x B. x \<in>## B \<and> (\<exists>b. \<gamma>1_mem b = x \<and> \<gamma>2_mem b = B)) (\<gamma>1_mem a) (\<gamma>1_mem a)"
-
-definition Mem :: "u \<Rightarrow> u \<Rightarrow> bool" (infix "\<in>#" 50) where
-  "Mem x A = unique_unsafe (\<lambda>P. (P \<longleftrightarrow> (x \<in>## A)) \<and> (\<exists>b. \<gamma>1_mem b = x \<and> \<gamma>2_mem b = A))"
+  emptyset: "\<And>x. \<not> x \<in># emptyset" and
+  mem_ext: "\<And>A B. A = B \<or> (\<exists>x. \<not> (x \<in># A \<longleftrightarrow> x \<in># B))" and
+  mem_acyclic: "\<And>A. \<not> tranclp (op \<in>#) A A"
 
 nitpick_params [card = 1-8, eval = "\<lambda>x. {y. y \<in># x}", format mem = 2]
 
@@ -67,14 +55,29 @@ lemma "x \<in># y \<Longrightarrow> y \<in># z \<Longrightarrow> \<not> z \<in>#
   sorry
 
 
-subsection {* Empty Set *}
+subsection {* Quantifiers *}
 
-axiomatization emptyset :: u where
-  emptyset_def[nitpick_simp]: "\<forall>a. \<gamma>2_mem a = emptyset \<longrightarrow> \<not> \<gamma>1_mem a \<in>## emptyset"
+text \<open>
+Nunchaku will look for finite models of @{type u}. Universal quantification
+@{prop "\<forall>x :: u. P x"} in the original problem must be translated to
+@{text "false asserting exists x : u. ~ P x"} to account for the incompleteness
+of @{type u} w.r.t. the ZF universe it approximates, unless there is a guard
+@{text "x \<in># \<dots>"} in @{prop "P x"}, in which case @{prop "\<forall>x :: u. P x"} can be
+left alone.
+\<close>
 
+definition All_u :: "(u \<Rightarrow> bool) \<Rightarrow> bool" where
+  "All_u P = (\<forall>x. P x \<and> Nitpick.unknown)"
+
+(* use All_u? *)
 lemma "\<forall>x. \<not> x \<in># emptyset"
-  nitpick [satisfy, expect = none]
+  nitpick [satisfy, expect = genuine]
   nitpick [expect = none]
+  sorry
+
+lemma "\<exists>u. All_u (\<lambda>x. x \<in># u)"
+  nitpick [satisfy, expect = none]
+  nitpick [expect = genuine]
   sorry
 
 lemma "(SOME x. \<not> x \<in># A) \<in># A"
@@ -104,7 +107,7 @@ where
   app_ext: "\<And>f g. dom f = dom g \<and> (\<forall>x. x \<in># dom f \<longrightarrow> f \<cdot> x = g \<cdot> x) \<longrightarrow> f = g"
 
 abbreviation mapsto :: "u \<Rightarrow> (u \<Rightarrow> u) \<Rightarrow> u" where
-  "mapsto A f \<equiv> unique_unsafe (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
+  "mapsto A f \<equiv> The_bang (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
 
 lemma "f = mapsto (dom f) (op \<cdot> f)"
   nitpick [expect = none]
@@ -113,15 +116,10 @@ lemma "f = mapsto (dom f) (op \<cdot> f)"
 
 subsection {* Powerset *}
 
-text {*
-Starting from here, things don't work well unless we introduce \<alpha> types for each
-operation, as we would in Nunchaku.
-*}
-
 definition
   Pow :: "u \<Rightarrow> u"
 where
-  "Pow B = unique_unsafe (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
+  "Pow B = The_bang (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
 
 lemma "A \<in># Pow B"
   nitpick [expect = genuine]
@@ -145,7 +143,7 @@ subsection {* Big Union *}
 definition
   Union :: "u \<Rightarrow> u"
 where
-  "Union B = unique_unsafe (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
+  "Union B = The_bang (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
 
 lemma "A \<in># Union A"
   nitpick [expect = genuine]

@@ -6,12 +6,8 @@ section {* Untyped Set Theory as in TLA+ *}
 
 subsection {* Basic Setup *}
 
-text \<open>
-This will be called @{text "iota!"} in Nunchaku:
-\<close>
-
-definition The_bang :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
-  "The_bang P = (if \<exists>x. P x then The P else Nitpick.unknown)"
+definition unique_unsafe :: "('a \<Rightarrow> bool) \<Rightarrow> 'a" where
+  "unique_unsafe P = (if \<exists>x. P x then The P else Nitpick.unknown)"
 
 typedecl u
 
@@ -107,7 +103,7 @@ where
   app_ext: "\<And>f g. dom f = dom g \<and> (\<forall>x. x \<in># dom f \<longrightarrow> f \<cdot> x = g \<cdot> x) \<longrightarrow> f = g"
 
 abbreviation mapsto :: "u \<Rightarrow> (u \<Rightarrow> u) \<Rightarrow> u" where
-  "mapsto A f \<equiv> The_bang (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
+  "mapsto A f \<equiv> unique_unsafe (\<lambda>g. dom g = A \<and> (\<forall>x. x \<in># A \<longrightarrow> g \<cdot> x = f x))"
 
 lemma "f = mapsto (dom f) (op \<cdot> f)"
   nitpick [expect = none]
@@ -119,7 +115,7 @@ subsection {* Powerset *}
 definition
   Pow :: "u \<Rightarrow> u"
 where
-  "Pow B = The_bang (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
+  "Pow B = unique_unsafe (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
 
 lemma "A \<in># Pow B"
   nitpick [expect = genuine]
@@ -143,7 +139,7 @@ subsection {* Big Union *}
 definition
   Union :: "u \<Rightarrow> u"
 where
-  "Union B = The_bang (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
+  "Union B = unique_unsafe (\<lambda>C. \<forall>x. x \<in># C \<longleftrightarrow> (\<exists>A. x \<in># A \<and> A \<in># B))"
 
 lemma "A \<in># Union A"
   nitpick [expect = genuine]
