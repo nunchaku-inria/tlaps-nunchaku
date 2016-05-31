@@ -43,9 +43,10 @@ rec subset : u -> u -> prop :=
 rec Pow : u -> u :=
   forall B. Pow B = unique_unsafe (fun C. forall A. Mem (g A) C = subset (g A) B).
 
-val c : u.
-val d : u.
+val v : u.
+val w : u.
+val x : u.
+val y : u.
+val z : u.
 
-# goal ~ subset c d.
-
-goal Mem emptyset c.
+goal subset x y && ~ (x = y).
