@@ -20,7 +20,9 @@ axiomatization
   \<gamma>1_mem :: "\<alpha>_mem \<Rightarrow> u" and
   \<gamma>2_mem :: "\<alpha>_mem \<Rightarrow> u"
 
-nitpick_params [user_axioms, dont_box, show_all, atoms u = a b c d e f g h i j k l]
+nitpick_params [user_axioms, dont_box, show_all,
+  atoms u = a b c d e f g h i j k l,
+  atoms \<alpha>_mem = aa bb cc dd ee ff gg hh ii jj kk ll]
 
 
 subsection {* Set Membership *}
