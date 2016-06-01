@@ -34,9 +34,21 @@ rec subset : u -> u -> prop :=
 rec union : u -> u -> u :=
   forall A B. union A B = unique_unsafe (fun C. forall x. Mem (g x) C = (Mem (g x) A || Mem (g x) B)).
 
+# intersection
+rec inter : u -> u -> u :=
+  forall A B. inter A B = unique_unsafe (fun C. forall x. Mem (g x) C = (Mem (g x) A && Mem (g x) B)).
+
+# substraction
+rec minus : u -> u -> u :=
+  forall A B. minus A B = unique_unsafe (fun C. forall x. Mem (g x) C = (Mem (g x) A && ~(Mem (g x) B))).
+
 # powerset
 rec Pow : u -> u :=
   forall B. Pow B = unique_unsafe (fun C. forall A. Mem (g A) C = subset (g A) B).
+
+# big union
+rec Union : u -> u :=
+  forall A. Union A = unique_unsafe (fun U. forall x. Mem (g x) U = (exists X. Mem (g x) (g X) and Mem (g X) (g A))).
 
 val v : u.
 val w : u.
