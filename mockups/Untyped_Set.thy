@@ -106,8 +106,28 @@ where
   "Pow B = unique_unsafe (\<lambda>C. \<forall>A. A \<in># C \<longleftrightarrow> A \<subseteq># B)"
 
 lemma "A \<in># Pow B"
-  nitpick [expect = genuine] (* FIXME *)
+  nitpick [expect = genuine, debug] (* FIXME *)
   oops
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 lemma "\<not> A \<in># Pow B"
   nitpick [expect = genuine]
