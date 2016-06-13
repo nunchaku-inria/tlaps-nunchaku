@@ -1,0 +1,4 @@
+# Initial commands.
+include "prelude.nun".
+
+goal exists (x:u) (y:u). mem x y.

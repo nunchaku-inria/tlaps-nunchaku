@@ -1,0 +1,7 @@
+# Initial commands.
+include "prelude.nun".
+
+# End of initial commands.
+val S : u.
+goal ~
+       (forall (x:u).  mem x S  => (exists (x0:u).  mem x0 S  && (x ) != (x0 ))).

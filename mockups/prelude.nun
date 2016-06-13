@@ -2,8 +2,8 @@ val u : type [infinite].
 val alpha_u : type [approx_of u].
 val upcast : alpha_u -> u [upcast].
 
+include "set-theory.nun".
+
 val dom : u -> u.
 val app : u -> u -> u.
-axiom forall f g. (dom f = dom g) and (forall x. mem x (dom f) => ((app f x)=(app g x))) => (f=g).
-
-include "set-theory.nun".
+axiom forall f g. (dom f = dom g) && (forall x. mem x (dom f) => ((app f x)=(app g x))) => (f=g).
