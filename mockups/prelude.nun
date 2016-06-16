@@ -6,4 +6,4 @@ include "set-theory.nun".
 
 val dom : u -> u.
 val app : u -> u -> u.
-axiom forall f g. (dom f = dom g) && (forall x. mem x (dom f) => ((app f x)=(app g x))) => (f=g).
+axiom forall f g. (dom (upcast f) = dom (upcast g)) && (forall x. mem x (dom (upcast f)) => ((app (upcast f) x)=(app (upcast g) x))) => (f=g).
