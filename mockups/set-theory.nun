@@ -7,7 +7,7 @@ val mem_raw : u -> u -> prop.
 axiom forall (A : alpha_u) (B : alpha_u). upcast A = upcast B || (exists (x : alpha_u). ~ (mem_raw (upcast x) (upcast A) = mem_raw (upcast x) (upcast B))).
 
 rec mem : u -> u -> prop :=
-  forall x y. mem x y = unique_unsafe (fun P. P = mem_raw x y && (exists a. upcast a = x) && (exists b. upcast b = y)).
+   forall x y. mem x y = (mem_raw x y asserting ((exists a. upcast a = x) && (exists b. upcast b = y))).
 
 val trans_mem : alpha_u  -> alpha_u -> prop.
 
